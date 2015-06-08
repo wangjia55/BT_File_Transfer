@@ -1,4 +1,4 @@
-package jacob.bt_file_transfer;
+package com.jacob.bt.file;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

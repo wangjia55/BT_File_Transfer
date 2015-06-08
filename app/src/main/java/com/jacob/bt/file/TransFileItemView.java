@@ -1,4 +1,4 @@
-package jacob.bt_file_transfer;
+package com.jacob.bt.file;
 
 import android.content.Context;
 import android.util.AttributeSet;

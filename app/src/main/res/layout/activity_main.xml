@@ -33,27 +33,27 @@
             android:textColor="#ff6e6e6e"
             android:textSize="14sp"/>
 
-        <jacob.bt_file_transfer.TransFileItemView
+        <com.jacob.bt.file.TransFileItemView
             android:id="@+id/transItemOne"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <jacob.bt_file_transfer.TransFileItemView
+        <com.jacob.bt.file.TransFileItemView
             android:id="@+id/transItemTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <jacob.bt_file_transfer.TransFileItemView
+        <com.jacob.bt.file.TransFileItemView
             android:id="@+id/transItemThree"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <jacob.bt_file_transfer.TransFileItemView
+        <com.jacob.bt.file.TransFileItemView
             android:id="@+id/transItemFour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <jacob.bt_file_transfer.TransFileItemView
+        <com.jacob.bt.file.TransFileItemView
             android:id="@+id/transItemFive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
