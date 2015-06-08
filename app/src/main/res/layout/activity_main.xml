@@ -1,6 +1,86 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="#ffd1d1d1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:text="蓝牙文件传输"
+            android:textColor="#ff242424"
+            android:textSize="19sp"/>
+
+        <EditText
+            android:id="@+id/edit_text_imsi"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#ffe0e6ff"
+            android:hint="请输入IMSI"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="注意：在文件读取过程中请勿断开蓝牙"
+            android:layout_margin="5dp"
+            android:textColor="#ff6e6e6e"
+            android:textSize="14sp"/>
+
+        <jacob.bt_file_transfer.TransFileItemView
+            android:id="@+id/transItemOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <jacob.bt_file_transfer.TransFileItemView
+            android:id="@+id/transItemTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <jacob.bt_file_transfer.TransFileItemView
+            android:id="@+id/transItemThree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <jacob.bt_file_transfer.TransFileItemView
+            android:id="@+id/transItemFour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <jacob.bt_file_transfer.TransFileItemView
+            android:id="@+id/transItemFive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/button_start"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Start"/>
+
+        <Button
+            android:id="@+id/button_send_file"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:text="Send File"/>
+    </LinearLayout>
 
 
 </RelativeLayout>

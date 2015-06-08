@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="55dp">
+
+    <TextView
+        android:id="@+id/text_view_item_order"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:background="@mipmap/ic_item_text_bg"
+        android:gravity="center"
+        android:text="1"
+        android:textSize="17sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/text_view_item_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toLeftOf="@+id/relative_state"
+        android:layout_toRightOf="@+id/text_view_item_order"
+        android:textSize="17sp"/>
+
+    <RelativeLayout
+        android:id="@+id/relative_state"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp">
+
+        <ImageView
+            android:id="@+id/image_view_error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:scaleType="center"
+            android:src="@mipmap/ic_error"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/image_view_ok"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:scaleType="center"
+            android:src="@mipmap/ic_ok"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:background="#ff7c7c7c"/>
+
+</RelativeLayout>

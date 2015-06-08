@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">BT_File_Transfer</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="item_one">扫描制定的设备</string>
+    <string name="item_two">进行设备连接</string>
+    <string name="item_three">切换到SPP通道</string>
+    <string name="item_four">进行文件的读取</string>
+    <string name="item_five">切换到Gatt通道</string>
+
 </resources>
