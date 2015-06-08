@@ -62,4 +62,10 @@ public class TransFileItemView extends RelativeLayout {
         mImageViewError.setVisibility(View.VISIBLE);
         mProgress.setVisibility(View.GONE);
     }
+
+    public void resetItemState() {
+        mImageViewOk.setVisibility(View.GONE);
+        mImageViewError.setVisibility(View.GONE);
+        mProgress.setVisibility(View.GONE);
+    }
 }

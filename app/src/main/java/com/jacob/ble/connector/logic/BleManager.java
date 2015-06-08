@@ -51,10 +51,9 @@ public class BleManager {
 
 
     private void connectIfDeviceFound(BluetoothDevice device, byte[] broadcast) {
-        LogUtils.LOGD("device find ", " " + device.getName());
         if (mBleConnectInfo != null && mBleConnectInfo.shouldConnectDevice(device, broadcast)) {
             mBleConnectCallback.onDeviceFound(device);
-            LogUtils.LOGD("device connect ", " " + device.getName());
+            LogUtils.LOGE("device connect ", " " + device.getName());
             mGoogleBle.stopScan();
             mGoogleBle.connect(device, mBleConnectInfo, mIsAuto, mBleConnectCallback);
         }
