@@ -22,6 +22,10 @@ import com.jacob.ble.connector.core.BleConnectCallback;
 import com.jacob.ble.connector.logic.BleCommand;
 import com.jacob.ble.connector.logic.BleManager;
 import com.jacob.ble.connector.utils.LogUtils;
+import com.jacob.bt.file.logic.BleDevice;
+import com.jacob.bt.file.logic.BleDeviceInfo;
+import com.jacob.bt.file.logic.FileLogic;
+import com.jacob.bt.file.logic.TransFileItem;
 import com.jacob.bt.spp.core.BtManager;
 import com.jacob.bt.spp.impl.BtConnectCallBack;
 import com.jacob.bt.spp.impl.BtPullFileCallBack;
@@ -33,6 +37,7 @@ import java.io.File;
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
     public static final String TAG = "MainActivity";
+    private static final int REQUEST_CODE_CHOOSE_DEVICE = 100;
 
     private TransFileItemView mTransItemScanDevice;
     private TransFileItemView mTransItemConnectDevice;
@@ -48,6 +53,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private BleManager mBleManager;
     private BleDeviceInfo mBleDeviceInfo;
     private BluetoothAdapter mBluetoothAdapter;
+    private BleDevice mBleDevice;
     private static final int REQUEST_START_BLE = 10;
 
     public static final int MSG_START_SCAN = 0x100;
@@ -143,7 +149,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         findViewById(R.id.button_reset).setOnClickListener(this);
 
         mTextViewImei = (TextView) findViewById(R.id.text_view_imei);
-        mTextViewFileName= (TextView) findViewById(R.id.text_view_file_name);
+        mTextViewFileName = (TextView) findViewById(R.id.text_view_file_name);
+
+        mTextViewImei.setOnClickListener(this);
+        mTextViewFileName.setOnClickListener(this);
 
         mTransItemScanDevice.setTransFileItem(TransFileItem.item_one);
         mTransItemConnectDevice.setTransFileItem(TransFileItem.item_two);
@@ -208,6 +217,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.button_reset:
                 break;
+
+            case R.id.text_view_imei:
+                Intent intentImei = new Intent(MainActivity.this, DeviceListActivity.class);
+                startActivityForResult(intentImei, REQUEST_CODE_CHOOSE_DEVICE);
+                break;
+            case R.id.text_view_file_name:
+
+                break;
         }
     }
 
@@ -232,7 +249,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mBtSppManager.connect(DEVICE_MAC, mBtConnectCallBack);
+                    mBtSppManager.connect(mBleDevice.getEdrMac(), mBtConnectCallBack);
                 }
             }, 3000);
 
@@ -306,5 +323,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         }
 
+        if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null) {
+            mBleDevice = (BleDevice) data.getSerializableExtra("device");
+            updateViewByDevice();
+        }
+
+    }
+
+    private void updateViewByDevice(){
+        if (mBleDevice != null){
+            mTextViewImei.setText(mBleDevice.getImei());
+        }
     }
 }

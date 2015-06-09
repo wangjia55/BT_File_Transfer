@@ -8,6 +8,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.jacob.bt.file.logic.TransFileItem;
+
 /**
  * Package : jacob.bt_file_transfer
  * Author : jacob

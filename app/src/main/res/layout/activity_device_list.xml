@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffececec">
+
+    <TextView
+        android:id="@+id/text_view_header"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:text="选择Tracker设备"
+        android:textColor="#ff242424"
+        android:textSize="19sp"/>
+
+    <ListView
+        android:id="@+id/list_view_device"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/button_add_device"
+        android:layout_below="@+id/text_view_header"
+        android:dividerHeight="1dp"/>
+
+    <Button
+        android:id="@+id/button_add_device"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:background="@drawable/bg_btn_orange"
+        android:text="添加设备"
+        android:textColor="#ffffff"
+        android:textSize="18sp"/>
+
+</RelativeLayout>

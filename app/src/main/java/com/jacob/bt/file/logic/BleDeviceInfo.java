@@ -1,4 +1,4 @@
-package com.jacob.bt.file;
+package com.jacob.bt.file.logic;
 
 import android.bluetooth.BluetoothDevice;
 

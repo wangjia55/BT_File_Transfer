@@ -1,8 +1,10 @@
-package com.jacob.bt.file;
+package com.jacob.bt.file.logic;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+
+import java.io.Serializable;
 
 /**
  * Package : com.jacob.bt.file
@@ -11,7 +13,7 @@ import com.activeandroid.annotation.Table;
  * Description : 这个类是用来xxx
  */
 @Table(name = "t_ble_device")
-public class BleDevice extends Model{
+public class BleDevice extends Model implements Serializable{
 
     @Column(name = "imei")
     private String imei;

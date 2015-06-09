@@ -1,6 +1,5 @@
 package com.jacob.bt.file;
 
-import android.app.Application;
 import android.widget.Toast;
 
 import com.jacob.ble.connector.exception.InitException;
@@ -14,7 +13,7 @@ import com.jacob.bt.spp.exception.BtInitException;
  * Date : 15-6-8
  * Description : 这个类是用来xxx
  */
-public class BtFileApplication extends Application {
+public class BtFileApplication extends com.activeandroid.app.Application {
 
     @Override
     public void onCreate() {

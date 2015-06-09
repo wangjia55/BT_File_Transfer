@@ -1,4 +1,6 @@
-package com.jacob.bt.file;
+package com.jacob.bt.file.logic;
+
+import com.jacob.bt.file.R;
 
 /**
  * Package : jacob.bt_file_transfer

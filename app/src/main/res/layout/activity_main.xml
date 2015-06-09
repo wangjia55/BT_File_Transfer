@@ -40,8 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:background="#ffe0e6ff"
-                android:gravity="center"
-                android:text="460040018306479"/>
+                android:hint="请点击选择一个设备"
+                android:gravity="center"/>
 
         </LinearLayout>
 
