@@ -24,7 +24,9 @@ import com.jacob.ble.connector.logic.BleManager;
 import com.jacob.ble.connector.utils.LogUtils;
 import com.jacob.bt.file.logic.BleDevice;
 import com.jacob.bt.file.logic.BleDeviceInfo;
+import com.jacob.bt.file.logic.DataBaseHelper;
 import com.jacob.bt.file.logic.FileLogic;
+import com.jacob.bt.file.logic.NewPreferenceManager;
 import com.jacob.bt.file.logic.TransFileItem;
 import com.jacob.bt.spp.core.BtManager;
 import com.jacob.bt.spp.impl.BtConnectCallBack;
@@ -38,6 +40,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_CHOOSE_DEVICE = 100;
+    private static final int REQUEST_CODE_FILE_ADDRESS = 110;
+
 
     private TransFileItemView mTransItemScanDevice;
     private TransFileItemView mTransItemConnectDevice;
@@ -53,7 +57,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private BleManager mBleManager;
     private BleDeviceInfo mBleDeviceInfo;
     private BluetoothAdapter mBluetoothAdapter;
-    private BleDevice mBleDevice;
+    private BleDevice mBleDevice = new BleDevice();
     private static final int REQUEST_START_BLE = 10;
 
     public static final int MSG_START_SCAN = 0x100;
@@ -67,10 +71,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static final int MSG_CHANGE_TO_GATT_SUCCESS = 0x108;
     public static final int MSG_CHANGE_TO_GATT_FAIL = 0x109;
 
-    public static final String COMMAND_TO_SPP = "90000000000000102";
-    public static final String COMMAND_TO_GATT = "90000000000000101";
+    private static final int MSG_RESET_BLE = 0x210;
 
-    private String DEVICE_MAC = "28:6D:47:76:62:61";
+    public static final String COMMAND_TO_SPP = "02";
+    public static final String COMMAND_TO_GATT = "01";
 
     private String mFileName;
 
@@ -87,6 +91,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     mTransItemConnectDevice.showProgressState();
                     break;
                 case MSG_FOUND_DEVICE_ERROR:
+                    mButtonStart.setEnabled(true);
                     mTransItemScanDevice.showErrorState();
                     break;
                 case MSG_CONNECT_DEVICE_SUCCESS:
@@ -102,6 +107,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     mTransItemChangeGatt.showProgressState();
                     break;
                 case MSG_PULL_FILE_ERROR:
+                    mButtonStart.setEnabled(true);
                     mTransItemPullFile.showErrorState();
                     break;
                 case MSG_START_PULL_FILE:
@@ -111,7 +117,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     mTransItemChangeGatt.showOKState();
                     break;
                 case MSG_CHANGE_TO_GATT_FAIL:
+                    mButtonStart.setEnabled(true);
                     mTransItemChangeGatt.showErrorState();
+                    break;
+                case MSG_RESET_BLE:
+                    if (mBluetoothAdapter != null) {
+                        mBluetoothAdapter.enable();
+                    }
                     break;
             }
         }
@@ -150,6 +162,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         mTextViewImei = (TextView) findViewById(R.id.text_view_imei);
         mTextViewFileName = (TextView) findViewById(R.id.text_view_file_name);
+        mTextViewFileName.setText(NewPreferenceManager.getInstance(getApplicationContext()).getFileAddress());
+        String imei = NewPreferenceManager.getInstance(getApplicationContext()).getImei();
+        if (!"".equals(imei)) {
+            mTextViewImei.setText(imei);
+            mBleDevice = DataBaseHelper.getInstance().getDeviceByImei(imei);
+        }
 
         mTextViewImei.setOnClickListener(this);
         mTextViewFileName.setOnClickListener(this);
@@ -175,15 +193,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         mBtSppManager = BtManager.getInstance();
         mBleManager = BleManager.getInstance();
-
         mFileName = mTextViewFileName.getText().toString();
+
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-
         //注册ble 状态的广播，如果蓝牙 开／关 都会收到广播
         IntentFilter intentFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mBleReceiver, intentFilter);
@@ -201,8 +218,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         switch (view.getId()) {
             case R.id.button_start:
                 resetItemState();
+                mButtonStart.setEnabled(false);
 
-                String imsi = mTextViewImei.getText().toString();
+                String imsi = mBleDevice.getImsi();
                 if (imsi.length() != 15) {
                     return;
                 }
@@ -216,6 +234,25 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 startActivity(intent);
                 break;
             case R.id.button_reset:
+                resetItemState();
+
+                mBtSppManager.connect(mBleDevice.getEdrMac(), new BtConnectCallBack() {
+                    @Override
+                    public void deviceConnected() {
+                        LogUtils.LOGE("TAG", "deviceConnected");
+                        mBtSppManager.writeData((mBleDevice.getImei() + COMMAND_TO_GATT).getBytes(), null);
+                        if (mBluetoothAdapter != null) {
+                            mBluetoothAdapter.disable();
+                            mHandler.sendEmptyMessageDelayed(MSG_RESET_BLE, 2000);
+                        }
+                    }
+
+                    @Override
+                    public void deviceDisconnected(String reason) {
+
+                    }
+                });
+
                 break;
 
             case R.id.text_view_imei:
@@ -223,7 +260,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 startActivityForResult(intentImei, REQUEST_CODE_CHOOSE_DEVICE);
                 break;
             case R.id.text_view_file_name:
-
+                Intent intentFile = new Intent(MainActivity.this, SetFileAddressActivity.class);
+                startActivityForResult(intentFile, REQUEST_CODE_FILE_ADDRESS);
                 break;
         }
     }
@@ -243,7 +281,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
             //注意： 这里是向设备写一条命令，这里根据实际的情况操作
             mHandler.sendEmptyMessage(MSG_CONNECT_DEVICE_SUCCESS);
-            mBleManager.writeToDevice(BleCommand.getVerifyCommand(COMMAND_TO_SPP));
+            mBleManager.writeToDevice(BleCommand.getVerifyCommand(mBleDevice.getImei() + COMMAND_TO_SPP));
             mBleManager.disconnect();
             mHandler.sendEmptyMessage(MSG_CHANGE_TO_SPP);
             mHandler.postDelayed(new Runnable() {
@@ -284,7 +322,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         @Override
         public void readData(String data) {
             mHandler.sendEmptyMessage(MSG_PULL_FILE_SUCCESS);
-            mBtSppManager.writeData(new String(COMMAND_TO_GATT).getBytes(), new BtTransferDataCallBack() {
+            mBtSppManager.writeData((mBleDevice.getImei() + COMMAND_TO_GATT).getBytes(), new BtTransferDataCallBack() {
                 @Override
                 public void sendData(byte[] data) {
                     mHandler.sendEmptyMessage(MSG_CHANGE_TO_GATT_SUCCESS);
@@ -328,10 +366,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             updateViewByDevice();
         }
 
+        if (requestCode == REQUEST_CODE_FILE_ADDRESS && data != null) {
+            String fileAdd = data.getStringExtra("address");
+            mTextViewFileName.setText(fileAdd);
+        }
     }
 
-    private void updateViewByDevice(){
-        if (mBleDevice != null){
+    private void updateViewByDevice() {
+        if (mBleDevice != null) {
             mTextViewImei.setText(mBleDevice.getImei());
         }
     }

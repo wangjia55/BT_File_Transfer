@@ -13,19 +13,19 @@ import java.io.Serializable;
  * Description : 这个类是用来xxx
  */
 @Table(name = "t_ble_device")
-public class BleDevice extends Model implements Serializable{
+public class BleDevice extends Model implements Serializable {
 
     @Column(name = "imei")
-    private String imei;
+    private String imei = "";
 
     @Column(name = "imsi")
-    private String imsi;
+    private String imsi = "";
 
     @Column(name = "edrMac")
-    private String edrMac;
+    private String edrMac = "";
 
     @Column(name = "bleMac")
-    private String bleMac;
+    private String bleMac = "";
 
     public String getImei() {
         return imei;

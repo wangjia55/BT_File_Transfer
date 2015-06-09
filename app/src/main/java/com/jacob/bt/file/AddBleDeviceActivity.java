@@ -17,7 +17,7 @@ public class AddBleDeviceActivity extends Activity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup_ble_device);
+        setContentView(R.layout.activity_add_ble_device);
         mEditImei = (EditText) findViewById(R.id.edit_text_device_imei);
         mEditImsi = (EditText) findViewById(R.id.edit_text_device_imsi);
         mEditEdrMac = (EditText) findViewById(R.id.edit_text_device_edrmac);

@@ -3,6 +3,7 @@ package com.jacob.bt.spp.core;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
+import com.jacob.ble.connector.utils.LogUtils;
 import com.jacob.bt.spp.exception.BtInitException;
 import com.jacob.bt.spp.impl.BtConnectCallBack;
 import com.jacob.bt.spp.impl.BtPullFileCallBack;
@@ -90,6 +91,7 @@ public class BtManager implements IBtService {
      */
     @Override
     public void writeData(byte[] data, BtTransferDataCallBack btTransferDataCallBack) {
+        LogUtils.LOGE("TAG", "send——>:" + new String(data));
         mBtSppConnector.writeData(data, btTransferDataCallBack);
     }
 

@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import com.jacob.bt.file.logic.BleDevice;
 import com.jacob.bt.file.logic.DataBaseHelper;
+import com.jacob.bt.file.logic.NewPreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +38,12 @@ public class DeviceListActivity extends Activity implements View.OnClickListener
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BleDevice device = mDeviceAdapter.getItem(position);
+                NewPreferenceManager.getInstance(getApplicationContext()).saveImei(device.getImei());
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("device", device);
                 intent.putExtras(bundle);
-                setResult(RESULT_OK,intent);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });

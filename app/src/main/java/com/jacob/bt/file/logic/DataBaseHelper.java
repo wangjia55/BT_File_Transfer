@@ -27,4 +27,8 @@ public class DataBaseHelper {
     public List<BleDevice> getAllDevice() {
         return new Select().from(BleDevice.class).execute();
     }
+
+    public BleDevice getDeviceByImei(String imei) {
+        return new Select().from(BleDevice.class).executeSingle();
+    }
 }

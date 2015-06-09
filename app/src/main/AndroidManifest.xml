@@ -32,6 +32,10 @@
         <activity
             android:name=".DeviceListActivity"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".SetFileAddressActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
