@@ -170,9 +170,11 @@ class BtFileManager {
 
                 for (int i = 0; i < readLen; i++) {
                     byte[] data = new byte[2];
-                    System.arraycopy(mReceiveBuffer, 2 + 2 * i, data, 0, 2);
-                    value = CommandUtils.getInt8(data);
-                    buf[totalRead + i] = Integer.valueOf(value).byteValue();
+                    if ( 2 +2 * i + 1 < mReceiveBuffer.length) {
+                        System.arraycopy(mReceiveBuffer,  2 + 2 * i, data, 0, 2);
+                        value = CommandUtils.getInt8(data);
+                        buf[totalRead + i] = Integer.valueOf(value).byteValue();
+                    }
                 }
                 totalRead += readLen;
                 len -= readLen;
@@ -249,8 +251,19 @@ class BtFileManager {
                         if (new String(data).equals("Fail:Read fail.")) {
                             mReceiveBuffer = null;
                         } else {
-                            mReceiveBuffer = new byte[data.length - 2 - 1];
-                            System.arraycopy(data, 2, mReceiveBuffer, 0, data.length - 2 - 1);
+                            int startWith = 0;
+                            byte[] dataHeader = new byte[2];
+                            System.arraycopy(data, 0, dataHeader, 0, 2);
+                            LogUtils.LOGE("TAG--->", new String(dataHeader));
+                            if (new String(dataHeader).startsWith("Ok")) {
+                                startWith = 2;
+                                mReceiveBuffer = new byte[data.length - 2 - 1];
+                                System.arraycopy(data, startWith, mReceiveBuffer, 0, data.length - 2 - 1);
+                            } else {
+                                startWith = 0;
+                                mReceiveBuffer = new byte[data.length-1];
+                                System.arraycopy(data, startWith, mReceiveBuffer, 0, data.length-1);
+                            }
                         }
                         break;
                 }

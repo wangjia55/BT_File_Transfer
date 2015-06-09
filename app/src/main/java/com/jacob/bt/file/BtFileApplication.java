@@ -2,8 +2,6 @@ package com.jacob.bt.file;
 
 import android.widget.Toast;
 
-import com.jacob.ble.connector.exception.InitException;
-import com.jacob.ble.connector.logic.BleManager;
 import com.jacob.bt.spp.core.BtManager;
 import com.jacob.bt.spp.exception.BtInitException;
 
@@ -23,12 +21,6 @@ public class BtFileApplication extends com.activeandroid.app.Application {
             BtManager.getInstance().init();
         } catch (BtInitException e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        try {
-            BleManager.getInstance().init(this);
-        } catch (InitException e) {
-            e.printStackTrace();
         }
     }
 }

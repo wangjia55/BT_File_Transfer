@@ -2,7 +2,6 @@ package com.jacob.bt.file;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,12 +17,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jacob.ble.connector.core.BleConnectCallback;
-import com.jacob.ble.connector.logic.BleCommand;
-import com.jacob.ble.connector.logic.BleManager;
 import com.jacob.ble.connector.utils.LogUtils;
 import com.jacob.bt.file.logic.BleDevice;
-import com.jacob.bt.file.logic.BleDeviceInfo;
 import com.jacob.bt.file.logic.DataBaseHelper;
 import com.jacob.bt.file.logic.FileLogic;
 import com.jacob.bt.file.logic.NewPreferenceManager;
@@ -31,7 +26,6 @@ import com.jacob.bt.file.logic.TransFileItem;
 import com.jacob.bt.spp.core.BtManager;
 import com.jacob.bt.spp.impl.BtConnectCallBack;
 import com.jacob.bt.spp.impl.BtPullFileCallBack;
-import com.jacob.bt.spp.impl.BtTransferDataCallBack;
 
 import java.io.File;
 
@@ -42,11 +36,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private static final int REQUEST_CODE_CHOOSE_DEVICE = 100;
     private static final int REQUEST_CODE_FILE_ADDRESS = 110;
 
-    private TransFileItemView mTransItemScanDevice;
     private TransFileItemView mTransItemConnectDevice;
-    private TransFileItemView mTransItemChangeSpp;
     private TransFileItemView mTransItemPullFile;
-    private TransFileItemView mTransItemChangeGatt;
 
     private TextView mTextViewImei;
     private TextView mTextViewFileName;
@@ -54,27 +45,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private String mFileName;
     private BtManager mBtSppManager;
-    private BleManager mBleManager;
-    private BleDeviceInfo mBleDeviceInfo;
     private BluetoothAdapter mBluetoothAdapter;
     private BleDevice mBleDevice = new BleDevice();
     private static final int REQUEST_START_BLE = 10;
 
     public static final int MSG_START_SCAN = 0x100;
-    public static final int MSG_FOUND_DEVICE_SUCCESS = 0x101;
-    public static final int MSG_FOUND_DEVICE_ERROR = 0x102;
     public static final int MSG_CONNECT_DEVICE_SUCCESS = 0x103;
-    public static final int MSG_CHANGE_TO_SPP = 0x104;
     public static final int MSG_START_PULL_FILE = 0x105;
     public static final int MSG_PULL_FILE_SUCCESS = 0x106;
     public static final int MSG_PULL_FILE_ERROR = 0x107;
-    public static final int MSG_CHANGE_TO_GATT_SUCCESS = 0x108;
-    public static final int MSG_CHANGE_TO_GATT_FAIL = 0x109;
 
     private static final int MSG_RESET_BLE = 0x210;
-
-    public static final String COMMAND_TO_SPP = "02";
-    public static final String COMMAND_TO_GATT = "01";
 
 
     private Handler mHandler = new Handler() {
@@ -83,27 +64,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_START_SCAN:
-                    mTransItemScanDevice.showProgressState();
-                    break;
-                case MSG_FOUND_DEVICE_SUCCESS:
-                    mTransItemScanDevice.showOKState();
                     mTransItemConnectDevice.showProgressState();
-                    break;
-                case MSG_FOUND_DEVICE_ERROR:
-                    mButtonStart.setEnabled(true);
-                    mTransItemScanDevice.showErrorState();
                     break;
                 case MSG_CONNECT_DEVICE_SUCCESS:
                     mTransItemConnectDevice.showOKState();
-                    mTransItemChangeSpp.showProgressState();
-                    break;
-                case MSG_CHANGE_TO_SPP:
-                    mTransItemChangeSpp.showOKState();
-                    mTransItemPullFile.showProgressState();
                     break;
                 case MSG_PULL_FILE_SUCCESS:
                     mTransItemPullFile.showOKState();
-                    mTransItemChangeGatt.showProgressState();
+                    mButtonStart.setEnabled(true);
                     break;
                 case MSG_PULL_FILE_ERROR:
                     mButtonStart.setEnabled(true);
@@ -112,18 +80,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 case MSG_START_PULL_FILE:
                     mTransItemPullFile.showProgressState();
                     break;
-                case MSG_CHANGE_TO_GATT_SUCCESS:
-                    mTransItemChangeGatt.showOKState();
-                    mButtonStart.setEnabled(true);
-                    break;
-                case MSG_CHANGE_TO_GATT_FAIL:
-                    mButtonStart.setEnabled(true);
-                    mTransItemChangeGatt.showErrorState();
-                    break;
                 case MSG_RESET_BLE:
                     if (mBluetoothAdapter != null) {
                         mBluetoothAdapter.enable();
                     }
+                    mButtonStart.setEnabled(true);
                     break;
             }
         }
@@ -139,6 +100,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     break;
                 case BluetoothAdapter.STATE_OFF:
                     LogUtils.LOGE(TAG, "BluetoothAdapter.STATE_OFF");
+                    if (mBtSppManager != null){
+                        mBtSppManager.dispose();
+                    }
                     break;
             }
         }
@@ -150,11 +114,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTransItemScanDevice = (TransFileItemView) findViewById(R.id.transItemOne);
-        mTransItemConnectDevice = (TransFileItemView) findViewById(R.id.transItemTwo);
-        mTransItemChangeSpp = (TransFileItemView) findViewById(R.id.transItemThree);
-        mTransItemPullFile = (TransFileItemView) findViewById(R.id.transItemFour);
-        mTransItemChangeGatt = (TransFileItemView) findViewById(R.id.transItemFive);
+        mTransItemConnectDevice = (TransFileItemView) findViewById(R.id.transItemOne);
+        mTransItemPullFile = (TransFileItemView) findViewById(R.id.transItemTwo);
         mButtonStart = (Button) findViewById(R.id.button_start);
         mButtonStart.setOnClickListener(this);
         findViewById(R.id.button_send_file).setOnClickListener(this);
@@ -172,11 +133,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mTextViewImei.setOnClickListener(this);
         mTextViewFileName.setOnClickListener(this);
 
-        mTransItemScanDevice.setTransFileItem(TransFileItem.item_one);
-        mTransItemConnectDevice.setTransFileItem(TransFileItem.item_two);
-        mTransItemChangeSpp.setTransFileItem(TransFileItem.item_three);
-        mTransItemPullFile.setTransFileItem(TransFileItem.item_four);
-        mTransItemChangeGatt.setTransFileItem(TransFileItem.item_five);
+        mTransItemConnectDevice.setTransFileItem(TransFileItem.item_one);
+        mTransItemPullFile.setTransFileItem(TransFileItem.item_two);
 
         // 优先判断设备是否支持ble， 再次判断ble是否开关， 如果没有打开就请求开启
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
@@ -192,7 +150,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
 
         mBtSppManager = BtManager.getInstance();
-        mBleManager = BleManager.getInstance();
         mFileName = mTextViewFileName.getText().toString();
     }
 
@@ -218,14 +175,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             case R.id.button_start:
                 resetItemState();
                 mButtonStart.setEnabled(false);
-
                 String imsi = mBleDevice.getImsi();
                 if (imsi.length() != 15) {
                     return;
                 }
                 mHandler.sendEmptyMessage(MSG_START_SCAN);
-                mBleDeviceInfo = new BleDeviceInfo(imsi);
-                mBleManager.scanAndConnectDevice(mBleDeviceInfo, false, mBleConnectCallBack);
+                mBtSppManager.connect(mBleDevice.getEdrMac(), mBtConnectCallBack);
+
                 break;
             case R.id.button_send_file:
                 String fileName = getFileName(mFileName);
@@ -235,23 +191,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case R.id.button_reset:
                 resetItemState();
-
-                mBtSppManager.connect(mBleDevice.getEdrMac(), new BtConnectCallBack() {
-                    @Override
-                    public void deviceConnected() {
-                        LogUtils.LOGE("TAG", "deviceConnected");
-                        mBtSppManager.writeData((mBleDevice.getImei() + COMMAND_TO_GATT).getBytes(), null);
-                        if (mBluetoothAdapter != null) {
-                            mBluetoothAdapter.disable();
-                            mHandler.sendEmptyMessageDelayed(MSG_RESET_BLE, 2000);
-                        }
-                    }
-
-                    @Override
-                    public void deviceDisconnected(String reason) {
-
-                    }
-                });
+                if (mBluetoothAdapter != null) {
+                    mBluetoothAdapter.disable();
+                    mHandler.sendEmptyMessageDelayed(MSG_RESET_BLE, 1000);
+                }
 
                 break;
 
@@ -267,49 +210,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void resetItemState() {
-        mTransItemScanDevice.resetItemState();
         mTransItemConnectDevice.resetItemState();
-        mTransItemChangeSpp.resetItemState();
         mTransItemPullFile.resetItemState();
-        mTransItemChangeGatt.resetItemState();
     }
 
-    private BleConnectCallback mBleConnectCallBack = new BleConnectCallback() {
-        @Override
-        public void onConnectSuccess(BluetoothDevice bluetoothDevice) {
-            LogUtils.LOGE(TAG, "onConnectSuccess");
-
-            //注意： 这里是向设备写一条命令，这里根据实际的情况操作
-            mHandler.sendEmptyMessage(MSG_CONNECT_DEVICE_SUCCESS);
-            mBleManager.writeToDevice(BleCommand.getVerifyCommand(mBleDevice.getImei() + COMMAND_TO_SPP));
-            mBleManager.disconnect();
-            mHandler.sendEmptyMessage(MSG_CHANGE_TO_SPP);
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mBtSppManager.connect(mBleDevice.getEdrMac(), mBtConnectCallBack);
-                }
-            }, 7000);
-
-        }
-
-        @Override
-        public void onDeviceFound(BluetoothDevice bluetoothDevice) {
-            LogUtils.LOGE(TAG, "onDeviceFound");
-            mHandler.sendEmptyMessage(MSG_FOUND_DEVICE_SUCCESS);
-        }
-
-        @Override
-        public void onError(int errorCode, String reason) {
-            LogUtils.LOGE(TAG, "onError");
-            mHandler.sendEmptyMessage(MSG_FOUND_DEVICE_ERROR);
-        }
-    };
 
     private BtConnectCallBack mBtConnectCallBack = new BtConnectCallBack() {
         @Override
         public void deviceConnected() {
             mBtSppManager.pullFile(mFileName, mBtPullCallBack);
+            mHandler.sendEmptyMessage(MSG_CONNECT_DEVICE_SUCCESS);
             mHandler.sendEmptyMessage(MSG_START_PULL_FILE);
         }
 
@@ -322,22 +232,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         @Override
         public void readData(String data) {
             mHandler.sendEmptyMessage(MSG_PULL_FILE_SUCCESS);
-            mBtSppManager.writeData((mBleDevice.getImei() + COMMAND_TO_GATT).getBytes(), new BtTransferDataCallBack() {
-                @Override
-                public void sendData(byte[] data) {
-                    mHandler.sendEmptyMessage(MSG_CHANGE_TO_GATT_SUCCESS);
-                }
-
-                @Override
-                public void readData(byte[] data) {
-
-                }
-
-                @Override
-                public void transDataError(String reason) {
-                    mHandler.sendEmptyMessage(MSG_CHANGE_TO_GATT_FAIL);
-                }
-            });
         }
 
         @Override

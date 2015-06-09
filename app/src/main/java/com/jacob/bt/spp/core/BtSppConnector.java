@@ -148,6 +148,12 @@ class BtSppConnector {
         return mConnectState;
     }
 
+    public void dispose() {
+        mConnectState = ConnectState.STATE_DISCONNECTED;
+        mBluetoothAdapter.cancelDiscovery();
+        disconnect();
+    }
+
 
     /**
      * 这个线程是用于连接设备而开启的子线程
