@@ -187,7 +187,7 @@ class BtFileManager {
         private boolean waitResponse() {
             int count = 0;
             mResponse = false;
-            while (count < 3) {
+            while (count < 5) {
                 try {
                     count++;
                     sleep(500);

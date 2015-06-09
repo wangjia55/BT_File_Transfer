@@ -42,7 +42,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private static final int REQUEST_CODE_CHOOSE_DEVICE = 100;
     private static final int REQUEST_CODE_FILE_ADDRESS = 110;
 
-
     private TransFileItemView mTransItemScanDevice;
     private TransFileItemView mTransItemConnectDevice;
     private TransFileItemView mTransItemChangeSpp;
@@ -53,6 +52,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private TextView mTextViewFileName;
     private Button mButtonStart;
 
+    private String mFileName;
     private BtManager mBtSppManager;
     private BleManager mBleManager;
     private BleDeviceInfo mBleDeviceInfo;
@@ -76,7 +76,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static final String COMMAND_TO_SPP = "02";
     public static final String COMMAND_TO_GATT = "01";
 
-    private String mFileName;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -115,6 +114,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     break;
                 case MSG_CHANGE_TO_GATT_SUCCESS:
                     mTransItemChangeGatt.showOKState();
+                    mButtonStart.setEnabled(true);
                     break;
                 case MSG_CHANGE_TO_GATT_FAIL:
                     mButtonStart.setEnabled(true);
@@ -194,7 +194,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mBtSppManager = BtManager.getInstance();
         mBleManager = BleManager.getInstance();
         mFileName = mTextViewFileName.getText().toString();
-
     }
 
 
@@ -229,7 +228,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 mBleManager.scanAndConnectDevice(mBleDeviceInfo, false, mBleConnectCallBack);
                 break;
             case R.id.button_send_file:
-                File file = new File("/sdcard/btspp/" + mFileName);
+                String fileName = getFileName(mFileName);
+                File file = new File("/sdcard/btspp/" + fileName);
                 Intent intent = FileLogic.sendAnalysisReport(getApplicationContext(), file);
                 startActivity(intent);
                 break;
@@ -289,7 +289,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 public void run() {
                     mBtSppManager.connect(mBleDevice.getEdrMac(), mBtConnectCallBack);
                 }
-            }, 3000);
+            }, 7000);
 
         }
 
@@ -376,5 +376,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         if (mBleDevice != null) {
             mTextViewImei.setText(mBleDevice.getImei());
         }
+    }
+
+    private String getFileName(String name) {
+        String fileName = name;
+        fileName = fileName.replace(":\\", "_");
+        fileName = fileName.replace('\\', '_');
+        return fileName;
     }
 }
