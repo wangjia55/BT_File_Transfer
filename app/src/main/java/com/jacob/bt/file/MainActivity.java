@@ -15,7 +15,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jacob.ble.connector.core.BleConnectCallback;
@@ -39,7 +39,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private TransFileItemView mTransItemChangeSpp;
     private TransFileItemView mTransItemPullFile;
     private TransFileItemView mTransItemChangeGatt;
-    private EditText mEditTextImsi;
+
+    private TextView mTextViewImei;
+    private TextView mTextViewFileName;
     private Button mButtonStart;
 
     private BtManager mBtSppManager;
@@ -63,6 +65,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static final String COMMAND_TO_GATT = "90000000000000101";
 
     private String DEVICE_MAC = "28:6D:47:76:62:61";
+
     private String mFileName;
 
     private Handler mHandler = new Handler() {
@@ -139,13 +142,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         findViewById(R.id.button_send_file).setOnClickListener(this);
         findViewById(R.id.button_reset).setOnClickListener(this);
 
-        mEditTextImsi = (EditText) findViewById(R.id.edit_text_imsi);
+        mTextViewImei = (TextView) findViewById(R.id.text_view_imei);
+        mTextViewFileName= (TextView) findViewById(R.id.text_view_file_name);
+
         mTransItemScanDevice.setTransFileItem(TransFileItem.item_one);
         mTransItemConnectDevice.setTransFileItem(TransFileItem.item_two);
         mTransItemChangeSpp.setTransFileItem(TransFileItem.item_three);
         mTransItemPullFile.setTransFileItem(TransFileItem.item_four);
         mTransItemChangeGatt.setTransFileItem(TransFileItem.item_five);
-
 
         // 优先判断设备是否支持ble， 再次判断ble是否开关， 如果没有打开就请求开启
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
@@ -162,6 +166,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         mBtSppManager = BtManager.getInstance();
         mBleManager = BleManager.getInstance();
+
+        mFileName = mTextViewFileName.getText().toString();
     }
 
 
@@ -187,7 +193,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             case R.id.button_start:
                 resetItemState();
 
-                String imsi = mEditTextImsi.getText().toString();
+                String imsi = mTextViewImei.getText().toString();
                 if (imsi.length() != 15) {
                     return;
                 }
@@ -248,7 +254,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private BtConnectCallBack mBtConnectCallBack = new BtConnectCallBack() {
         @Override
         public void deviceConnected() {
-            mBtSppManager.pullFile("c:\\autostart.txt", mBtPullCallBack);
+            mBtSppManager.pullFile(mFileName, mBtPullCallBack);
             mHandler.sendEmptyMessage(MSG_START_PULL_FILE);
         }
 
