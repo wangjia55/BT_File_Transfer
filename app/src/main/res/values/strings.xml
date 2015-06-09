@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">BT_File_Transfer</string>
-
+    <string name="app_name">蓝牙文件传输</string>
     <string name="item_one">扫描制定的设备</string>
     <string name="item_two">进行设备连接</string>
     <string name="item_three">切换到SPP通道</string>

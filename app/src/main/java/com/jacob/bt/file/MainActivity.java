@@ -27,6 +27,8 @@ import com.jacob.bt.spp.impl.BtConnectCallBack;
 import com.jacob.bt.spp.impl.BtPullFileCallBack;
 import com.jacob.bt.spp.impl.BtTransferDataCallBack;
 
+import java.io.File;
+
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -61,6 +63,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static final String COMMAND_TO_GATT = "90000000000000101";
 
     private String DEVICE_MAC = "28:6D:47:76:62:61";
+    private String mFileName;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -134,8 +137,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mButtonStart = (Button) findViewById(R.id.button_start);
         mButtonStart.setOnClickListener(this);
         findViewById(R.id.button_send_file).setOnClickListener(this);
-        mEditTextImsi = (EditText) findViewById(R.id.edit_text_imsi);
+        findViewById(R.id.button_reset).setOnClickListener(this);
 
+        mEditTextImsi = (EditText) findViewById(R.id.edit_text_imsi);
         mTransItemScanDevice.setTransFileItem(TransFileItem.item_one);
         mTransItemConnectDevice.setTransFileItem(TransFileItem.item_two);
         mTransItemChangeSpp.setTransFileItem(TransFileItem.item_three);
@@ -192,6 +196,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 mBleManager.scanAndConnectDevice(mBleDeviceInfo, false, mBleConnectCallBack);
                 break;
             case R.id.button_send_file:
+                File file = new File("/sdcard/btspp/" + mFileName);
+                Intent intent = FileLogic.sendAnalysisReport(getApplicationContext(), file);
+                startActivity(intent);
+                break;
+            case R.id.button_reset:
                 break;
         }
     }

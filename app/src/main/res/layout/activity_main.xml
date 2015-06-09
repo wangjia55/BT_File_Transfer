@@ -73,18 +73,42 @@
             android:id="@+id/button_start"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:textColor="#ffffff"
             android:background="@drawable/bg_btn_orange"
-            android:text="Start"/>
+            android:text="开始"
+            android:textColor="#ffffff"
+            android:textSize="18sp"/>
 
-        <Button
-            android:id="@+id/button_send_file"
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
-            android:textColor="#ffffff"
-            android:background="@drawable/bg_btn_orange"
-            android:text="Send File"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_reset"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_btn_grey"
+                android:text="重置"
+                android:layout_marginRight="10dp"
+                android:textColor="#ffffff"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/button_send_file"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_btn_orange"
+                android:text="发送文件"
+                android:layout_marginLeft="10dp"
+                android:textColor="#ffffff"
+                android:textSize="18sp"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 
