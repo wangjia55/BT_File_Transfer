@@ -3,6 +3,9 @@ package com.jacob.bt.file;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -49,6 +52,47 @@ public class DeviceListActivity extends Activity implements View.OnClickListener
         });
 
         updateList();
+
+        this.registerForContextMenu(mListViewDevice);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        // set context menu title
+        menu.setHeaderTitle("请选择一个操作:");
+        // add context menu item
+        menu.add(0, 1, Menu.NONE, "编辑");
+        menu.add(0, 2, Menu.NONE, "删除");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case 1:
+                // do something
+            {
+                BleDevice bleDevice = mBleDeviceList.get(menuInfo.position);
+                Intent intent = new Intent(this,AddBleDeviceActivity.class);
+                intent.putExtra(AddBleDeviceActivity.TYPE,AddBleDeviceActivity.TYPE_EDIT_DEVICE);
+                intent.putExtra(AddBleDeviceActivity.IMEI,bleDevice.getImei());
+                startActivityForResult(intent,REQUEST_CODE_ADD_DEVICE);
+            }
+            break;
+            case 2:
+                //delete
+            {
+                BleDevice bleDevice = mBleDeviceList.get(menuInfo.position);
+                bleDevice.delete();
+                mBleDeviceList.remove(bleDevice);
+                mDeviceAdapter.notifyDataSetChanged();
+            }
+            break;
+            default:
+                return super.onContextItemSelected(item);
+        }
+        return true;
     }
 
     private void updateList() {
