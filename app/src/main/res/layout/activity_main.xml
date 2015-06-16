@@ -4,6 +4,7 @@
                 android:background="#ffececec">
 
     <LinearLayout
+        android:id="@+id/linear_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -104,6 +105,34 @@
             android:id="@+id/transItemTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/linear_header"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="注意：如果需要使用文件读取功能，一定要让tracker进入SPP模式，正常情况下如果能够使用蓝牙随行则表明当前处于BLE模式（Ble模式不能读取文件）"
+            android:textColor="#ff6e6e6e"
+            android:textSize="14sp"/>
+
+        <Button
+            android:id="@+id/button_spp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_btn_orange"
+            android:text="进入SPP模式"
+            android:textColor="#ffffff"
+            android:textSize="18sp"/>
 
     </LinearLayout>
 

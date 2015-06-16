@@ -2,6 +2,7 @@ package com.jacob.bt.file;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +18,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jacob.ble.connector.core.BleConnectCallback;
+import com.jacob.ble.connector.logic.BleCommand;
+import com.jacob.ble.connector.logic.BleManager;
 import com.jacob.ble.connector.utils.LogUtils;
 import com.jacob.bt.file.logic.BleDevice;
 import com.jacob.bt.file.logic.DataBaseHelper;
@@ -100,7 +104,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     break;
                 case BluetoothAdapter.STATE_OFF:
                     LogUtils.LOGE(TAG, "BluetoothAdapter.STATE_OFF");
-                    if (mBtSppManager != null){
+                    if (mBtSppManager != null) {
                         mBtSppManager.dispose();
                     }
                     break;
@@ -120,6 +124,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mButtonStart.setOnClickListener(this);
         findViewById(R.id.button_send_file).setOnClickListener(this);
         findViewById(R.id.button_reset).setOnClickListener(this);
+        findViewById(R.id.button_spp).setOnClickListener(this);
 
         mTextViewImei = (TextView) findViewById(R.id.text_view_imei);
         mTextViewFileName = (TextView) findViewById(R.id.text_view_file_name);
@@ -205,6 +210,28 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             case R.id.text_view_file_name:
                 Intent intentFile = new Intent(MainActivity.this, SetFileAddressActivity.class);
                 startActivityForResult(intentFile, REQUEST_CODE_FILE_ADDRESS);
+                break;
+            case R.id.button_spp:
+                BleDeviceConnectInfo connectInfo = new BleDeviceConnectInfo(mBleDevice.getImsi());
+                BleManager.getInstance().scanAndConnectDevice(connectInfo, false, new BleConnectCallback() {
+
+                    @Override
+                    public void onConnectSuccess(BluetoothDevice bluetoothDevice) {
+                        BleManager.getInstance().writeToDevice(BleCommand.getVerifyCommand(mBleDevice.getImei() + "02"));
+                        Toast.makeText(getApplicationContext(), "已经发送切换SPP指令，请过4秒钟后进行文件读取", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onDeviceFound(BluetoothDevice bluetoothDevice) {
+
+                    }
+
+                    @Override
+                    public void onError(int errorCode, String reason) {
+                        Toast.makeText(getApplicationContext(), "切换通道失败，请确认是否已经在SPP通道或蓝牙已经打开", Toast.LENGTH_LONG).show();
+                    }
+                });
+
                 break;
         }
     }
